@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flexi Sql Tools Core", "Core\Flexi Sql Tools Core.csproj", "{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E5737928-27A5-4FC2-8285-DD5AA0B6F848}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Presentation", "1. Presentation", "{F2799D8D-7289-47AD-92E2-ED8FC912BEBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows Form Application", "Windows Form Application", "{83230214-078D-4B6D-AF63-6B2F8C30DB37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flexi Sql Tools Windows Forms", "Presentation\Flexi Sql Tools Windows Forms.csproj", "{D19755E7-25F6-4BD2-865A-BA9C339C538F}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://omidshariati.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Presentation\\Flexi\u0020Sql\u0020Tools\u0020Windows\u0020Forms.csproj
+		SccProjectTopLevelParentUniqueName1 = FlexSqlTools.sln
+		SccProjectName1 = Presentation
+		SccLocalPath1 = Presentation
+		SccProjectUniqueName2 = Core\\Flexi\u0020Sql\u0020Tools\u0020Core.csproj
+		SccProjectTopLevelParentUniqueName2 = FlexSqlTools.sln
+		SccProjectName2 = Core
+		SccLocalPath2 = Core
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D19755E7-25F6-4BD2-865A-BA9C339C538F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D19755E7-25F6-4BD2-865A-BA9C339C538F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D19755E7-25F6-4BD2-865A-BA9C339C538F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D19755E7-25F6-4BD2-865A-BA9C339C538F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D6F4BA3-8E96-4E11-BB20-D88CE21DF5A2} = {E5737928-27A5-4FC2-8285-DD5AA0B6F848}
+		{83230214-078D-4B6D-AF63-6B2F8C30DB37} = {F2799D8D-7289-47AD-92E2-ED8FC912BEBC}
+		{D19755E7-25F6-4BD2-865A-BA9C339C538F} = {83230214-078D-4B6D-AF63-6B2F8C30DB37}
+	EndGlobalSection
+EndGlobal
