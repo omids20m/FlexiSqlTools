@@ -1011,6 +1011,7 @@
             // 
             // btnBuildCustom
             // 
+            this.btnBuildCustom.Enabled = false;
             this.btnBuildCustom.Location = new System.Drawing.Point(9, 230);
             this.btnBuildCustom.Name = "btnBuildCustom";
             this.btnBuildCustom.Size = new System.Drawing.Size(110, 23);
@@ -1201,6 +1202,7 @@
             // 
             // button11
             // 
+            this.button11.Enabled = false;
             this.button11.Location = new System.Drawing.Point(679, 373);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(75, 23);
@@ -1226,6 +1228,7 @@
             this.groupBox3.Controls.Add(this.txtDestinationPassword);
             this.groupBox3.Controls.Add(this.rbDestinationWinAuth);
             this.groupBox3.Controls.Add(this.rbDestinationSqlAuth);
+            this.groupBox3.Enabled = false;
             this.groupBox3.Location = new System.Drawing.Point(3, 186);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(751, 181);
@@ -1397,6 +1400,7 @@
             this.groupBox2.Controls.Add(this.txtSourcePassword);
             this.groupBox2.Controls.Add(this.rbSourceWinAuth);
             this.groupBox2.Controls.Add(this.rbSourceSqlAuth);
+            this.groupBox2.Enabled = false;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(751, 177);
