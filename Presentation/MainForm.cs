@@ -141,24 +141,36 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
         private TreeNode[] GetTablesAndViewsAsTreeNode(string dbName)
         {
             Collection<TreeNode> result = new Collection<TreeNode>();
-            DataSet dsTables = GetDatabseTables(dbName);
-            DataSet dsViews = GetDatabaseViews(dbName);
+            DataSet dsSchemas = GetDatabseSchemas(dbName);
 
-            if (dsTables != null && dsTables.Tables.Count > 0)
+            if (dsSchemas != null && dsSchemas.Tables.Count > 0)
             {
-                foreach (DataRow dr in dsTables.Tables[0].Rows)
+                foreach (DataRow dr in dsSchemas.Tables[0].Rows)
                 {
-                    TreeNode treeNode = new TreeNode(string.Format("{0}.{1}", dr["Schema_Name"], dr["Table_Name"]));
-                    result.Add(treeNode);
-                }
-            }
-            if (dsViews != null && dsViews.Tables.Count > 0)
-            {
-                foreach (DataRow dr in dsViews.Tables[0].Rows)
-                {
-                    //TreeNode treeNode = new TreeNode(dr["name"].ToString());
-                    TreeNode treeNode = new TreeNode(string.Format("{0}.{1}", dr["Schema_Name"], dr["View_Name"]));
-                    result.Add(treeNode);
+                    var schemaName = dr["Schema_Name"].ToString();
+                    TreeNode shemaNodes = new TreeNode(schemaName);
+                    DataSet dsTables = GetDatabseTables(dbName, schemaName);
+                    DataSet dsViews = GetDatabaseViews(dbName, schemaName);
+                    if (dsTables != null && dsTables.Tables.Count > 0)
+                    {
+                        foreach (DataRow tableRow in dsTables.Tables[0].Rows)
+                        {
+                            TreeNode tableNode = new TreeNode(string.Format("{0}.{1}", tableRow["Schema_Name"], tableRow["Table_Name"]));
+                            shemaNodes.Nodes.Add(tableNode);
+                        }
+                    }
+                    if (dsViews != null && dsViews.Tables.Count > 0)
+                    {
+                        foreach (DataRow viewRow in dsViews.Tables[0].Rows)
+                        {
+                            //TreeNode treeNode = new TreeNode(dr["name"].ToString());
+                            TreeNode viewNode = new TreeNode(string.Format("{0}.{1}", viewRow["Schema_Name"], viewRow["View_Name"]));
+                            shemaNodes.Nodes.Add(viewNode);
+                        }
+                    }
+
+
+                    result.Add(shemaNodes);
                 }
             }
             return result.ToArray();
@@ -194,15 +206,14 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
         {
             InitializeComponent();
         }
-
-        private DataSet GetDatabseTables(string dbName)
+        
+        private DataSet GetDatabseSchemas(string dbName)
         {
-            //SqlDataAdapter da = new SqlDataAdapter(string.Format("SELECT name FROM [{0}].[sys].[Tables] ORDER BY name ", dbName), mainSqlConnection);
             string selectCommandText = string.Format(
-                "SELECT  [{0}].[sys].[schemas].[name] as Schema_Name, [{0}].[sys].[Tables].[name] as Table_Name FROM [{0}].[sys].[Tables] {1}" +
-                "inner join [{0}].[sys].[schemas] on [{0}].[sys].[Tables].[schema_id] = [{0}].[sys].[schemas].[schema_id]{1}" +
-                "ORDER BY Schema_Name, Table_Name",
-                dbName, Environment.NewLine);
+                "Select [{0}].[sys].[schemas].[name] as schema_name, " +
+                "       [{0}].[sys].[schemas].[schema_id], " +
+                "       [{0}].[sys].[schemas].[principal_id] " +
+                "From   [{0}].[sys].[schemas]", dbName);
             SqlDataAdapter da = new SqlDataAdapter(selectCommandText, mainSqlConnection);
             DataSet ds = new DataSet();
             try
@@ -217,14 +228,42 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             }
         }
 
-        private DataSet GetDatabaseViews(string dbName)
+        private DataSet GetDatabseTables(string dbName, string shemaName)
+        {
+            //SqlDataAdapter da = new SqlDataAdapter(string.Format("SELECT name FROM [{0}].[sys].[Tables] ORDER BY name ", dbName), mainSqlConnection);
+            string selectCommandText = string.Format(
+                "SELECT  [{0}].[sys].[schemas].[name] as Schema_Name, {2}" +
+                "        [{0}].[sys].[Tables].[name] as Table_Name {2}" +
+                "FROM    [{0}].[sys].[Tables] {2}" +
+                "inner join [{0}].[sys].[schemas] on [{0}].[sys].[Tables].[schema_id] = [{0}].[sys].[schemas].[schema_id] {2}" +
+                "WHERE [{0}].[sys].[schemas].[name] like '{1}' {2}" +
+                "ORDER BY Schema_Name, Table_Name",
+                dbName, shemaName, Environment.NewLine);
+            SqlDataAdapter da = new SqlDataAdapter(selectCommandText, mainSqlConnection);
+            DataSet ds = new DataSet();
+            try
+            {
+                da.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+
+        private DataSet GetDatabaseViews(string dbName, string shemaName)
         {
             //SqlDataAdapter da = new SqlDataAdapter(string.Format("SELECT name FROM [{0}].[sys].[Views] ORDER BY name ", dbName), mainSqlConnection);
             string selectCommandText = string.Format(
-                "SELECT  [{0}].[sys].[schemas].[name] as Schema_Name, [{0}].[sys].[Views].[name] as View_Name FROM [{0}].[sys].[Views] {1}" +
-                "inner join [{0}].[sys].[schemas] on [{0}].[sys].[Views].[schema_id] = [{0}].[sys].[schemas].[schema_id]{1}" +
+                "SELECT  [{0}].[sys].[schemas].[name] as Schema_Name, {2}" +
+                "        [{0}].[sys].[Views].[name] as View_Name {2}" +
+                "FROM    [{0}].[sys].[Views] {2}" +
+                "inner join [{0}].[sys].[schemas] on [{0}].[sys].[Views].[schema_id] = [{0}].[sys].[schemas].[schema_id]{2}" +
+                "WHERE [{0}].[sys].[schemas].[name] like '{1}' {2}" +
                 "ORDER BY Schema_Name, View_Name",
-                dbName, Environment.NewLine);
+                dbName, shemaName, Environment.NewLine);
             SqlDataAdapter da = new SqlDataAdapter(selectCommandText, mainSqlConnection);
             DataSet ds = new DataSet();
             try
@@ -243,119 +282,122 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
         {
             StringBuilder result = new StringBuilder(String.Empty);
             //var nodesCsv = TreeNodeCollectionToCsv(GetCheckedTablesAsTreeNodes(databaseNode.Nodes), "'");
-            var nodesCsv = TreeNodeCollectionToCsv(GetCheckedTablesAsTreeNodes(databaseNode.Nodes), "");
+            var nodesCsv = TreeNodeCollectionToCsv(GetCheckedTablesAsTreeNodes(databaseNode.Nodes, false), "");
             if (nodesCsv == "" || nodesCsv == "''") return "";
             Collection<vw_SPGenenerator> dicTables_dicColumns = GetTabels_Rows(databaseNode.Text, nodesCsv);
 
             if (dicTables_dicColumns.Count > 0)
             {
-                foreach (TreeNode tblNode in databaseNode.Nodes)
+                foreach (TreeNode schemaNode in databaseNode.Nodes)
                 {
-                    StoredProcedureConfig storedProcedureConfig = new StoredProcedureConfig();
-                    storedProcedureConfig.UseGo = chkUseGo.Checked;
-                    storedProcedureConfig.UseDataBase = chkAddUseDB.Checked;
-                    string schemaName = tblNode.Text.Split('.')[0];
-                    string tableName = tblNode.Text.Split('.')[1];
-                    storedProcedureConfig.Name = new StoredProcedureName()
-                                                     {
-                                                         Prefix = txtPrefix.Text.Trim(),
-                                                         Postfix = txtPostfix.Text.Trim(),
-                                                         SchemaName = schemaName,
-                                                         TableName = tableName /*,
-                                                         Name = ""*/
-                                                     };
-
-                    if (tblNode.Checked)
+                    foreach (TreeNode tblNode in schemaNode.Nodes)
                     {
-                        var allColumnsForTable = GetColumnsCollectionForTable(dicTables_dicColumns, schemaName, tableName);
-                        if (chkDeleteRow.Checked)
+
+                        StoredProcedureConfig storedProcedureConfig = new StoredProcedureConfig();
+                        storedProcedureConfig.UseGo = chkUseGo.Checked;
+                        storedProcedureConfig.UseDataBase = chkAddUseDB.Checked;
+                        string schemaName = tblNode.Text.Split('.')[0];
+                        string tableName = tblNode.Text.Split('.')[1];
+                        storedProcedureConfig.Name = new StoredProcedureName()
+                                                         {
+                                                             Prefix = txtPrefix.Text.Trim(),
+                                                             Postfix = txtPostfix.Text.Trim(),
+                                                             SchemaName = schemaName,
+                                                             TableName = tableName /*,
+                                                         Name = ""*/
+                                                         };
+
+                        if (tblNode.Checked)
                         {
-                            #region if (chkDeleteRow.Checked)
+                            var allColumnsForTable = GetColumnsCollectionForTable(dicTables_dicColumns, schemaName, tableName);
+                            if (chkDeleteRow.Checked)
+                            {
+                                #region if (chkDeleteRow.Checked)
 
-                            storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
-                            string deleteRowSpQuery = DataBaseHelper.GenerateDeleteRowSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(deleteRowSpQuery);
-                            //if(chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(deleteRowSpQuery);
+                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                string deleteRowSpQuery = DataBaseHelper.GenerateDeleteRowSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(deleteRowSpQuery);
+                                //if(chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(deleteRowSpQuery);
 
-                            #endregion
-                        }
-                        if (chkInsert.Checked)
-                        {
-                            #region if (chkInsert.Checked)
+                                #endregion
+                            }
+                            if (chkInsert.Checked)
+                            {
+                                #region if (chkInsert.Checked)
 
-                            storedProcedureConfig.Name.Name = txtInsert.Text.Trim();
-                            string insertSpQuery = DataBaseHelper.GenerateInsertSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(insertSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(insertSpQuery);
+                                storedProcedureConfig.Name.Name = txtInsert.Text.Trim();
+                                string insertSpQuery = DataBaseHelper.GenerateInsertSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(insertSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(insertSpQuery);
 
-                            #endregion
-                        }
-                        if (chkSelectAll.Checked)
-                        {
-                            #region if (chkSelectAll.Checked)
+                                #endregion
+                            }
+                            if (chkSelectAll.Checked)
+                            {
+                                #region if (chkSelectAll.Checked)
 
-                            storedProcedureConfig.Name.Name = txtSelectAll.Text.Trim();
-                            string selectAllSpQuery = DataBaseHelper.GenerateSelectAllSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(selectAllSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(selectAllSpQuery);
+                                storedProcedureConfig.Name.Name = txtSelectAll.Text.Trim();
+                                string selectAllSpQuery = DataBaseHelper.GenerateSelectAllSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(selectAllSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(selectAllSpQuery);
 
-                            #endregion
-                        }
-                        if (chkSelectRow.Checked)
-                        {
-                            #region if (chkSelectRow.Checked)
+                                #endregion
+                            }
+                            if (chkSelectRow.Checked)
+                            {
+                                #region if (chkSelectRow.Checked)
 
-                            storedProcedureConfig.Name.Name = txtSelectRow.Text.Trim();
-                            string selectRowSpQuery = DataBaseHelper.GenerateSelectRowSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(selectRowSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(selectRowSpQuery);
+                                storedProcedureConfig.Name.Name = txtSelectRow.Text.Trim();
+                                string selectRowSpQuery = DataBaseHelper.GenerateSelectRowSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(selectRowSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(selectRowSpQuery);
 
-                            #endregion
-                        }
-                        if (chkUpdate.Checked)
-                        {
-                            #region if (chkUpdate.Checked)
+                                #endregion
+                            }
+                            if (chkUpdate.Checked)
+                            {
+                                #region if (chkUpdate.Checked)
 
-                            storedProcedureConfig.Name.Name = txtUpdate.Text.Trim();
-                            string updateSpQuery = DataBaseHelper.GenerateUpdateSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(updateSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(updateSpQuery);
+                                storedProcedureConfig.Name.Name = txtUpdate.Text.Trim();
+                                string updateSpQuery = DataBaseHelper.GenerateUpdateSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(updateSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(updateSpQuery);
 
-                            #endregion
-                        }
-                        if (chkOldSearch_PageSort.Checked)
-                        {
-                            #region if (chkOldSearch_PageSort.Checked)
+                                #endregion
+                            }
+                            if (chkOldSearch_PageSort.Checked)
+                            {
+                                #region if (chkOldSearch_PageSort.Checked)
 
-                            storedProcedureConfig.Name.Name = txtOldSearch_PageSort.Text.Trim();
-                            string oldSearchWithPageSortSpQuery = DataBaseHelper.GenerateOldSearchWithPageSortTotalCountSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(oldSearchWithPageSortSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(oldSearchWithPageSortSpQuery);
+                                storedProcedureConfig.Name.Name = txtOldSearch_PageSort.Text.Trim();
+                                string oldSearchWithPageSortSpQuery = DataBaseHelper.GenerateOldSearchWithPageSortTotalCountSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(oldSearchWithPageSortSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(oldSearchWithPageSortSpQuery);
 
-                            #endregion
-                        }
-                        if (chkSearch_PageSort.Checked)
-                        {
-                            #region if (chkSearch_PageSort.Checked)
+                                #endregion
+                            }
+                            if (chkSearch_PageSort.Checked)
+                            {
+                                #region if (chkSearch_PageSort.Checked)
 
-                            storedProcedureConfig.Name.Name = txtSearch_PageSort.Text.Trim();
-                            string searchWithPageSortSpQuery = DataBaseHelper.GenerateSearchWithPagingAndSortingTotalCountSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
-                            result.AppendLine(searchWithPageSortSpQuery);
-                            //if (chkUseGo.Checked) result.AppendLine("GO");
-                            ExecuteQueryIfNeeded(searchWithPageSortSpQuery);
+                                storedProcedureConfig.Name.Name = txtSearch_PageSort.Text.Trim();
+                                string searchWithPageSortSpQuery = DataBaseHelper.GenerateSearchWithPagingAndSortingTotalCountSp(databaseNode.Text, allColumnsForTable, storedProcedureConfig);
+                                result.AppendLine(searchWithPageSortSpQuery);
+                                //if (chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(searchWithPageSortSpQuery);
 
-                            #endregion
+                                #endregion
+                            }
                         }
                     }
                 }
             }
-
             return result.ToString();
         }
 
@@ -398,14 +440,23 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             if (csvTableNames == "") csvTableNames = quoteChar + quoteChar;
             return csvTableNames;
         }
-        private static Collection<TreeNode> GetCheckedTablesAsTreeNodes(TreeNodeCollection nodes)
+        private static Collection<TreeNode> GetCheckedTablesAsTreeNodes(TreeNodeCollection nodes, bool recursiveCall)
         {
             Collection<TreeNode> col = new Collection<TreeNode>();
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (nodes[i].Checked)
+                if (nodes[i].Checked && recursiveCall)
                     col.Add(nodes[i]);
+                if (nodes[i].Nodes.Count > 0)
+                {
+                    var subNodes = GetCheckedTablesAsTreeNodes(nodes[i].Nodes, true);
+                    for (int j = 0; j < subNodes.Count; j++)
+                    {
+                        if (subNodes[j].Checked)
+                            col.Add(subNodes[j]);
+                    }
+                }
             }
             return col;
         }

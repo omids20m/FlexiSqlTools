@@ -178,7 +178,7 @@
             this.txtServerName.Name = "txtServerName";
             this.txtServerName.Size = new System.Drawing.Size(100, 20);
             this.txtServerName.TabIndex = 1;
-            this.txtServerName.Text = ".\\SQL2008R2";
+            this.txtServerName.Text = ".\\SQL2012";
             this.txtServerName.TextChanged += new System.EventHandler(this.txtServerName_TextChanged);
             // 
             // btnConnect
@@ -313,7 +313,7 @@
             // 
             // btnGenerate
             // 
-            this.btnGenerate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGenerate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGenerate.Location = new System.Drawing.Point(640, 368);
             this.btnGenerate.Name = "btnGenerate";
             this.btnGenerate.Size = new System.Drawing.Size(99, 23);
@@ -324,7 +324,7 @@
             // 
             // chkDropIfExist
             // 
-            this.chkDropIfExist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkDropIfExist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkDropIfExist.AutoSize = true;
             this.chkDropIfExist.Enabled = false;
             this.chkDropIfExist.Location = new System.Drawing.Point(351, 305);
@@ -336,7 +336,7 @@
             // 
             // chkEnableEncryption
             // 
-            this.chkEnableEncryption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkEnableEncryption.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkEnableEncryption.AutoSize = true;
             this.chkEnableEncryption.Location = new System.Drawing.Point(351, 328);
             this.chkEnableEncryption.Name = "chkEnableEncryption";
@@ -347,7 +347,7 @@
             // 
             // chkExecuteQueryInDB
             // 
-            this.chkExecuteQueryInDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkExecuteQueryInDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkExecuteQueryInDB.AutoSize = true;
             this.chkExecuteQueryInDB.Enabled = false;
             this.chkExecuteQueryInDB.Location = new System.Drawing.Point(351, 349);
@@ -470,6 +470,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.insertSpOrderbyExcludeFields);
             this.groupBox1.Controls.Add(this.getSingleSpOrderbyExcludeFields);
             this.groupBox1.Controls.Add(this.getAllSpOrderbyExcludeFields);
@@ -806,7 +807,7 @@
             // 
             // chkAddUseDB
             // 
-            this.chkAddUseDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkAddUseDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkAddUseDB.AutoSize = true;
             this.chkAddUseDB.Location = new System.Drawing.Point(351, 259);
             this.chkAddUseDB.Name = "chkAddUseDB";
@@ -850,7 +851,7 @@
             // 
             // chkcopyToClipboard
             // 
-            this.chkcopyToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkcopyToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkcopyToClipboard.AutoSize = true;
             this.chkcopyToClipboard.Location = new System.Drawing.Point(351, 372);
             this.chkcopyToClipboard.Name = "chkcopyToClipboard";
@@ -874,7 +875,7 @@
             // 
             // chkUseGo
             // 
-            this.chkUseGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkUseGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUseGo.AutoSize = true;
             this.chkUseGo.Checked = true;
             this.chkUseGo.CheckState = System.Windows.Forms.CheckState.Checked;
