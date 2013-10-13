@@ -56,6 +56,13 @@
             this.rbtnSql = new System.Windows.Forms.RadioButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnOldSearchTemplate = new System.Windows.Forms.Button();
+            this.btnSearchTemplate = new System.Windows.Forms.Button();
+            this.btnUpdateTemplate = new System.Windows.Forms.Button();
+            this.btnSelectRowTemplate = new System.Windows.Forms.Button();
+            this.btnSelectAllTemplate = new System.Windows.Forms.Button();
+            this.btnInsertTemplate = new System.Windows.Forms.Button();
+            this.btnDeleteRowTemplate = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.insertSpOrderbyExcludeFields = new System.Windows.Forms.Button();
             this.getSingleSpOrderbyExcludeFields = new System.Windows.Forms.Button();
@@ -153,7 +160,6 @@
             this.txtSourcePassword = new System.Windows.Forms.TextBox();
             this.rbSourceWinAuth = new System.Windows.Forms.RadioButton();
             this.rbSourceSqlAuth = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -434,7 +440,13 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.btnOldSearchTemplate);
+            this.tabPage1.Controls.Add(this.btnSearchTemplate);
+            this.tabPage1.Controls.Add(this.btnUpdateTemplate);
+            this.tabPage1.Controls.Add(this.btnSelectRowTemplate);
+            this.tabPage1.Controls.Add(this.btnSelectAllTemplate);
+            this.tabPage1.Controls.Add(this.btnInsertTemplate);
+            this.tabPage1.Controls.Add(this.btnDeleteRowTemplate);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.chkAddUseDB);
             this.tabPage1.Controls.Add(this.txtSearch_PageSort);
@@ -469,6 +481,85 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General Stored procedures";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btnOldSearchTemplate
+            // 
+            this.btnOldSearchTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOldSearchTemplate.Enabled = false;
+            this.btnOldSearchTemplate.Location = new System.Drawing.Point(355, 220);
+            this.btnOldSearchTemplate.Name = "btnOldSearchTemplate";
+            this.btnOldSearchTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnOldSearchTemplate.TabIndex = 99;
+            this.btnOldSearchTemplate.Text = "T";
+            this.btnOldSearchTemplate.UseVisualStyleBackColor = true;
+            this.btnOldSearchTemplate.Visible = false;
+            // 
+            // btnSearchTemplate
+            // 
+            this.btnSearchTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSearchTemplate.Enabled = false;
+            this.btnSearchTemplate.Location = new System.Drawing.Point(355, 195);
+            this.btnSearchTemplate.Name = "btnSearchTemplate";
+            this.btnSearchTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnSearchTemplate.TabIndex = 98;
+            this.btnSearchTemplate.Text = "T";
+            this.btnSearchTemplate.UseVisualStyleBackColor = true;
+            // 
+            // btnUpdateTemplate
+            // 
+            this.btnUpdateTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUpdateTemplate.Location = new System.Drawing.Point(355, 169);
+            this.btnUpdateTemplate.Name = "btnUpdateTemplate";
+            this.btnUpdateTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnUpdateTemplate.TabIndex = 97;
+            this.btnUpdateTemplate.Text = "T";
+            this.btnUpdateTemplate.UseVisualStyleBackColor = true;
+            this.btnUpdateTemplate.Click += new System.EventHandler(this.btnUpdateTemplate_Click);
+            // 
+            // btnSelectRowTemplate
+            // 
+            this.btnSelectRowTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectRowTemplate.Enabled = false;
+            this.btnSelectRowTemplate.Location = new System.Drawing.Point(355, 143);
+            this.btnSelectRowTemplate.Name = "btnSelectRowTemplate";
+            this.btnSelectRowTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnSelectRowTemplate.TabIndex = 96;
+            this.btnSelectRowTemplate.Text = "T";
+            this.btnSelectRowTemplate.UseVisualStyleBackColor = true;
+            // 
+            // btnSelectAllTemplate
+            // 
+            this.btnSelectAllTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectAllTemplate.Enabled = false;
+            this.btnSelectAllTemplate.Location = new System.Drawing.Point(355, 117);
+            this.btnSelectAllTemplate.Name = "btnSelectAllTemplate";
+            this.btnSelectAllTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnSelectAllTemplate.TabIndex = 95;
+            this.btnSelectAllTemplate.Text = "T";
+            this.btnSelectAllTemplate.UseVisualStyleBackColor = true;
+            // 
+            // btnInsertTemplate
+            // 
+            this.btnInsertTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnInsertTemplate.Location = new System.Drawing.Point(355, 91);
+            this.btnInsertTemplate.Name = "btnInsertTemplate";
+            this.btnInsertTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnInsertTemplate.TabIndex = 94;
+            this.btnInsertTemplate.Text = "T";
+            this.btnInsertTemplate.UseVisualStyleBackColor = true;
+            this.btnInsertTemplate.Click += new System.EventHandler(this.btnInsertTemplate_Click);
+            // 
+            // btnDeleteRowTemplate
+            // 
+            this.btnDeleteRowTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDeleteRowTemplate.Enabled = false;
+            this.btnDeleteRowTemplate.Location = new System.Drawing.Point(355, 65);
+            this.btnDeleteRowTemplate.Name = "btnDeleteRowTemplate";
+            this.btnDeleteRowTemplate.Size = new System.Drawing.Size(25, 23);
+            this.btnDeleteRowTemplate.TabIndex = 93;
+            this.btnDeleteRowTemplate.Text = "T";
+            this.btnDeleteRowTemplate.UseVisualStyleBackColor = true;
+            this.btnDeleteRowTemplate.Click += new System.EventHandler(this.btnDeleteRowTemplate_Click);
             // 
             // groupBox1
             // 
@@ -844,11 +935,11 @@
             this.chkSearch_PageSort.Checked = true;
             this.chkSearch_PageSort.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkSearch_PageSort.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkSearch_PageSort.Location = new System.Drawing.Point(351, 199);
+            this.chkSearch_PageSort.Location = new System.Drawing.Point(386, 199);
             this.chkSearch_PageSort.Name = "chkSearch_PageSort";
-            this.chkSearch_PageSort.Size = new System.Drawing.Size(220, 16);
+            this.chkSearch_PageSort.Size = new System.Drawing.Size(156, 16);
             this.chkSearch_PageSort.TabIndex = 35;
-            this.chkSearch_PageSort.Text = "Search with Paging and Sorting and TotalCount: ";
+            this.chkSearch_PageSort.Text = "Search with Paging and Sorting: ";
             this.chkSearch_PageSort.UseVisualStyleBackColor = true;
             // 
             // chkcopyToClipboard
@@ -867,11 +958,11 @@
             this.chkOldSearch_PageSort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkOldSearch_PageSort.AutoSize = true;
             this.chkOldSearch_PageSort.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkOldSearch_PageSort.Location = new System.Drawing.Point(351, 224);
+            this.chkOldSearch_PageSort.Location = new System.Drawing.Point(386, 224);
             this.chkOldSearch_PageSort.Name = "chkOldSearch_PageSort";
-            this.chkOldSearch_PageSort.Size = new System.Drawing.Size(220, 16);
+            this.chkOldSearch_PageSort.Size = new System.Drawing.Size(156, 16);
             this.chkOldSearch_PageSort.TabIndex = 32;
-            this.chkOldSearch_PageSort.Text = "Search with Paging and Sorting and TotalCount: ";
+            this.chkOldSearch_PageSort.Text = "Search with Paging and Sorting: ";
             this.chkOldSearch_PageSort.UseVisualStyleBackColor = true;
             this.chkOldSearch_PageSort.Visible = false;
             // 
@@ -894,7 +985,7 @@
             this.chkUpdate.AutoSize = true;
             this.chkUpdate.Checked = true;
             this.chkUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkUpdate.Location = new System.Drawing.Point(351, 173);
+            this.chkUpdate.Location = new System.Drawing.Point(386, 173);
             this.chkUpdate.Name = "chkUpdate";
             this.chkUpdate.Size = new System.Drawing.Size(85, 17);
             this.chkUpdate.TabIndex = 29;
@@ -907,7 +998,7 @@
             this.chkSelectRow.AutoSize = true;
             this.chkSelectRow.Checked = true;
             this.chkSelectRow.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSelectRow.Location = new System.Drawing.Point(351, 147);
+            this.chkSelectRow.Location = new System.Drawing.Point(386, 147);
             this.chkSelectRow.Name = "chkSelectRow";
             this.chkSelectRow.Size = new System.Drawing.Size(85, 17);
             this.chkSelectRow.TabIndex = 28;
@@ -920,7 +1011,7 @@
             this.chkSelectAll.AutoSize = true;
             this.chkSelectAll.Checked = true;
             this.chkSelectAll.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSelectAll.Location = new System.Drawing.Point(351, 121);
+            this.chkSelectAll.Location = new System.Drawing.Point(386, 121);
             this.chkSelectAll.Name = "chkSelectAll";
             this.chkSelectAll.Size = new System.Drawing.Size(81, 17);
             this.chkSelectAll.TabIndex = 27;
@@ -933,7 +1024,7 @@
             this.chkInsert.AutoSize = true;
             this.chkInsert.Checked = true;
             this.chkInsert.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkInsert.Location = new System.Drawing.Point(351, 95);
+            this.chkInsert.Location = new System.Drawing.Point(386, 95);
             this.chkInsert.Name = "chkInsert";
             this.chkInsert.Size = new System.Drawing.Size(85, 17);
             this.chkInsert.TabIndex = 26;
@@ -946,7 +1037,7 @@
             this.chkDeleteRow.AutoSize = true;
             this.chkDeleteRow.Checked = true;
             this.chkDeleteRow.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDeleteRow.Location = new System.Drawing.Point(351, 69);
+            this.chkDeleteRow.Location = new System.Drawing.Point(386, 69);
             this.chkDeleteRow.Name = "chkDeleteRow";
             this.chkDeleteRow.Size = new System.Drawing.Size(86, 17);
             this.chkDeleteRow.TabIndex = 25;
@@ -1557,16 +1648,6 @@
             this.rbSourceSqlAuth.Text = "Use SQL Server authentication";
             this.rbSourceSqlAuth.UseVisualStyleBackColor = true;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(640, 328);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 63;
-            this.button1.Text = "test template";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1735,7 +1816,13 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.TextBox txtDestinationConnectionString;
         private System.Windows.Forms.TextBox txtSourceConnectionString;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnOldSearchTemplate;
+        private System.Windows.Forms.Button btnSearchTemplate;
+        private System.Windows.Forms.Button btnUpdateTemplate;
+        private System.Windows.Forms.Button btnSelectRowTemplate;
+        private System.Windows.Forms.Button btnSelectAllTemplate;
+        private System.Windows.Forms.Button btnInsertTemplate;
+        private System.Windows.Forms.Button btnDeleteRowTemplate;
     }
 }
 

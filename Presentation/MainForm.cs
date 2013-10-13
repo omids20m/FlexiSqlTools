@@ -15,11 +15,23 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
 {
     public partial class MainForm : Form
     {
+
+        private string insertTemplate;
+        private string oldSearchTemplate;
+        private string searchTemplate;
+        private string updateTemplate;
+        private string selectRowTemplate;
+        private string selectAllTemplate;
+        private string deleteRowTemplate;
+
         #region Private Fields
+
         private SqlConnection mainSqlConnection;
+
         #endregion
 
         #region Event Hanlers
+
         private void Form1_Load(object sender, EventArgs e)
         {
             EnableOrDisableControl();
@@ -29,10 +41,12 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             chkLstRowNumber.Enabled = chkRowNumber.Checked;
 
         }
+
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
 
         }
+
         private void radioButton_CheckedChanged(object sender, EventArgs e)
         {
             EnableOrDisableControl();
@@ -40,6 +54,7 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             txtServerName_TextChanged(sender, e);
 
         }
+
         private void txtServerName_TextChanged(object sender, EventArgs e)
         {
             txtConnectionString.Text = "Data Source=" + txtServerName.Text + ";";
@@ -121,9 +136,11 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             tabControl1.SelectedIndex = 2;
 
         }
+
         #endregion
 
         #region Designer
+
         private void EnableOrDisableControl()
         {
             if (rbtnWindows.Checked)
@@ -138,6 +155,7 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
                 txtPassword.Enabled = true;
             }
         }
+
         private TreeNode[] GetTablesAndViewsAsTreeNode(string dbName)
         {
             Collection<TreeNode> result = new Collection<TreeNode>();
@@ -175,6 +193,7 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
             }
             return result.ToArray();
         }
+
         #endregion
 
         #region Helpers
@@ -204,9 +223,54 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
 
         public MainForm()
         {
+            insertTemplate = @"
+if OBJECT_ID ('[|schemaName|].[|tableName|]') is not null
+Begin
+    Drop Proc [|schemaName|].[|tableName|]
+End
+GO
+Create Procedure [|schemaName|].[|tableName|]
+	|inputParams|,
+	@InsertedId int output
+With Encryption
+As
+Begin
+    Set NoCount On;
+    |normalizeNationalTexts|
+
+    Insert Into [|dbName|].[|schemaName|].[|tableName|]
+        (|insertColumnList|)
+    Values
+        (|insertValueList|)
+    
+    Set @InsertedId = SCOPE_IDENTITY();
+End
+GO";
+        updateTemplate = @"
+if OBJECT_ID ('[|schemaName|].[|tableName|]') is not null
+Begin
+    Drop Proc [|schemaName|].[|tableName|]
+End
+GO
+Create Procedure |procName|
+    |updateParams|
+	/*|identityParams|,
+	--|inputParams|*/
+AS
+BEGIN
+    Set NoCount On;
+|normalizeNationalTexts|
+                
+	Update [|dbName|].[|schemaName|].[|tableName|]
+	Set
+	    |updateColumnList|
+	Where
+	    |whereStatement|
+END
+GO";
             InitializeComponent();
         }
-        
+
         private DataSet GetDatabseSchemas(string dbName)
         {
             string selectCommandText = string.Format(
@@ -337,24 +401,7 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
                                 #region From Template
 
                                 storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
-                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig,
-@"
-Create Procedure |procName|
-	|inputParams|,
-	@InsertedId int output
-With Encryption
-As
-Begin
-    Set NoCount On;
-    |normalizeNationalTexts|
-
-    Insert Into [|dbName|].[|schemaName|].[|tableName|]
-        (|insertColumnList|)
-    Values
-        (|insertValueList|)
-    
-    Set @InsertedId = SCOPE_IDENTITY();
-End");
+                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig, this.insertTemplate);
                                 result.AppendLine(generatedFromTemplate);
                                 //if(chkUseGo.Checked) result.AppendLine("GO");
                                 ExecuteQueryIfNeeded(generatedFromTemplate);
@@ -398,25 +445,9 @@ End");
                                 #endregion
 
                                 #region From Template
+
                                 storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
-                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig,
-@"
-Create Procedure |procName|
-    |updateParams|
-	/*|identityParams|,
-	--|inputParams|*/
-AS
-BEGIN
-    Set NoCount On;
-|normalizeNationalTexts|
-                
-	Update [|dbName|].[|schemaName|].[|tableName|]
-	Set
-	    |updateColumnList|
-	Where
-	|whereStatement|
-END
-GO");
+                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig, this.updateTemplate);
                                 result.AppendLine(generatedFromTemplate);
                                 //if(chkUseGo.Checked) result.AppendLine("GO");
                                 ExecuteQueryIfNeeded(generatedFromTemplate);
@@ -493,6 +524,7 @@ GO");
             if (csvTableNames == "") csvTableNames = quoteChar + quoteChar;
             return csvTableNames;
         }
+
         private static Collection<TreeNode> GetCheckedTablesAsTreeNodes(TreeNodeCollection nodes, bool recursiveCall)
         {
             Collection<TreeNode> col = new Collection<TreeNode>();
@@ -515,6 +547,7 @@ GO");
         }
 
         #region with Hashtable
+
         private Collection<vw_SPGenenerator> GetTabels_Rows(string databaseName, string csvTableNames)
         {
             mainSqlConnection = new SqlConnection(txtConnectionString.Text);
@@ -606,6 +639,7 @@ GO");
                 "	[{0}].INFORMATION_SCHEMA.COLUMNS.TABLE_NAME,{2}" +
                 "	[{0}].INFORMATION_SCHEMA.COLUMNS.ORDINAL_POSITION{2}",
                 databaseName, whereClause, Environment.NewLine);
+
             #endregion
 
             SqlDataAdapter da = new SqlDataAdapter(selectCommand, mainSqlConnection);
@@ -620,25 +654,25 @@ GO");
             {
                 vw_SPGenenerator record = new vw_SPGenenerator();
 
-                record.CHARACTER_MAXIMUM_LENGTH = (row["CHARACTER_MAXIMUM_LENGTH"] == DBNull.Value) ? null : (int?)row["CHARACTER_MAXIMUM_LENGTH"];
-                record.COLUMN_NAME = (string)row["COLUMN_NAME"];
+                record.CHARACTER_MAXIMUM_LENGTH = (row["CHARACTER_MAXIMUM_LENGTH"] == DBNull.Value) ? null : (int?) row["CHARACTER_MAXIMUM_LENGTH"];
+                record.COLUMN_NAME = (string) row["COLUMN_NAME"];
 
                 if (row["Constraint_Name"] != System.DBNull.Value)
-                    record.Constraint_Name = (string)row["Constraint_Name"];
+                    record.Constraint_Name = (string) row["Constraint_Name"];
                 if (row["Constraint_Type"] != System.DBNull.Value)
-                    record.Constraint_Type = (string)row["Constraint_Type"];
+                    record.Constraint_Type = (string) row["Constraint_Type"];
 
-                record.DATA_TYPE = (string)row["DATA_TYPE"];
-                record.IsIdentity = (int?)row["IsIdentity"];
+                record.DATA_TYPE = (string) row["DATA_TYPE"];
+                record.IsIdentity = (int?) row["IsIdentity"];
                 //record.IsIndex = (int?)row["IsIndex"];
-                if (row["IndexType"] != DBNull.Value) record.IndexType = (byte?)row["IndexType"];
+                if (row["IndexType"] != DBNull.Value) record.IndexType = (byte?) row["IndexType"];
 
-                record.ORDINAL_POSITION = (int?)row["ORDINAL_POSITION"];
-                record.TABLE_NAME = (string)row["TABLE_NAME"];
-                record.TABLE_SCHEMA = (string)row["TABLE_SCHEMA"];
+                record.ORDINAL_POSITION = (int?) row["ORDINAL_POSITION"];
+                record.TABLE_NAME = (string) row["TABLE_NAME"];
+                record.TABLE_SCHEMA = (string) row["TABLE_SCHEMA"];
 
                 if (row["unique_index_id"] != System.DBNull.Value)
-                    record.unique_index_id = (int?)row["unique_index_id"];
+                    record.unique_index_id = (int?) row["unique_index_id"];
 
                 //(string)dr["COLUMN_NAME"], 
 
@@ -646,6 +680,7 @@ GO");
             }
             return records;
         }
+
         #endregion
 
         private void comboDB_SelectedIndexChanged(object sender, EventArgs e)
@@ -825,6 +860,35 @@ GO");
             txtGeneratedQuery.Text = result.ToString();
             txtGeneratedQuery.SelectAll();
             tabControl1.SelectedIndex = 2;
+        }
+
+        private void btnDeleteRowTemplate_Click(object sender, EventArgs e)
+        {
+            var templateDialog = new TemplateDialog();
+            var dres = templateDialog.ShowDialog();
+            this.deleteRowTemplate = templateDialog.textBox1.Text;
+        }
+
+        private void btnInsertTemplate_Click(object sender, EventArgs e)
+        {
+            var templateDialog = new TemplateDialog();
+            templateDialog.textBox1.Text = insertTemplate;
+            var dialogResult = templateDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK)
+            {
+                this.insertTemplate = templateDialog.textBox1.Text;
+            }
+        }
+
+        private void btnUpdateTemplate_Click(object sender, EventArgs e)
+        {
+            var templateDialog = new TemplateDialog();
+            templateDialog.textBox1.Text = updateTemplate;
+            var dialogResult = templateDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK)
+            {
+                this.updateTemplate = templateDialog.textBox1.Text;
+            }
         }
     }
 }
