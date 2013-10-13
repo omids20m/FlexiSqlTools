@@ -34,19 +34,46 @@ namespace FlexiSqlTools.Core
                                  DateTime.Now, Environment.NewLine);
         }
 
+        public static string GenerateQueryFromTemplate(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig, string template)
+        {
+            bool hasIdentity = allColumnsOfTable.HasIdentity();
+            var primaryKeys = allColumnsOfTable.GetPrimaryKeys();
+            var selectTableSchema = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
+
+            //AppendUseDBExpression(dbName, spConfig, sss); //todo
+
+            template = template.Replace(TemplateKeywords.DatabaseName, dbName);
+            template = template.Replace(TemplateKeywords.SchemaName, selectTableSchema);
+            template = template.Replace(TemplateKeywords.TableName, spConfig.Name.TableName);
+
+            template = template.Replace(TemplateKeywords.UpdateParams, allColumnsOfTable.GetUpdateParams().ToString());
+            template = template.Replace(TemplateKeywords.UpdateColumnList, allColumnsOfTable.GetUpdateColumnListString().ToString());
+            template = template.Replace(TemplateKeywords.InputParams, allColumnsOfTable.GetNoIdentityColumns().GetUpdateParams().ToString());
+
+            template = template.Replace(TemplateKeywords.NormalizeNationalTexts, allColumnsOfTable.NormalizeTextColumnsQuery().ToString());
+            template = template.Replace(TemplateKeywords.InsertColumnList, allColumnsOfTable.GetInsertColumnList().ToString());
+            template = template.Replace(TemplateKeywords.InsertValueList, allColumnsOfTable.GetInsertValueList().ToString());
+
+            template = template.Replace(TemplateKeywords.WhereStatement, primaryKeys.GetWhereStatement().ToString());
+
+            return template;
+        }
+
         public static string GenerateInsertSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
-            bool hasIdentity = HasIdentity(allColumnsOfTable);
-            var selectTableSchema = GetTableSchema(allColumnsOfTable, spConfig);
+            //todo ye seri az code haye zir too method encapsulate shode ke bayad hazf beshe
 
-            StringBuilder sss = new StringBuilder(DataBaseHelper.GetCommentForSp());
+            bool hasIdentity = allColumnsOfTable.HasIdentity();
+            var selectTableSchema = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
+
+            var sss = new StringBuilder(DataBaseHelper.GetCommentForSp());
             AppendUseDBExpression(dbName, spConfig, sss);
 
             sss.AppendFormat("Create Procedure {0} {1}" +
                              "	",
                              spConfig.Name, Environment.NewLine);
 
-            AppendParameterDeclarationFor(allColumnsOfTable.Where(x => x.IsIdentity != 1), sss);
+            sss.Append(allColumnsOfTable.GetNoIdentityColumns().GetUpdateParams());
 
             if (spConfig.EnableEncryption)
                 sss.AppendFormat(" {0}" +
@@ -66,7 +93,7 @@ namespace FlexiSqlTools.Core
                              "Begin   {0}" +
                              "    Set NoCount On;{0}" +
                              "", Environment.NewLine);
-            AppendNormalizeQueryForTextColumns(allColumnsOfTable, sss);
+            sss.Append(allColumnsOfTable.NormalizeTextColumnsQuery());
 
             sss.AppendFormat(
                 "{3}" +
@@ -123,9 +150,8 @@ namespace FlexiSqlTools.Core
         
         public static string GenerateUpdateSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
-
-            var primaryKeys = allColumnsOfTable.Where(p => p.Constraint_Type == "PK").ToList();
-            var selectTableSchema = GetTableSchema(allColumnsOfTable, spConfig);
+            var primaryKeys = allColumnsOfTable.GetPrimaryKeys();
+            var selectTableSchema = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
             if (!primaryKeys.Any()) 
                 return "";
 
@@ -136,7 +162,7 @@ namespace FlexiSqlTools.Core
             sss.AppendFormat(" {0}" +
                              "	", Environment.NewLine);
 
-            AppendParameterDeclarationFor(allColumnsOfTable, sss);
+            sss.Append(allColumnsOfTable.GetUpdateParams());
 
             sss.Append(" ");
 
@@ -149,7 +175,7 @@ namespace FlexiSqlTools.Core
                              "    Set NoCount On;{0}" +
                              "", Environment.NewLine);
 
-            AppendNormalizeQueryForTextColumns(allColumnsOfTable, sss);
+            sss.Append(allColumnsOfTable.NormalizeTextColumnsQuery());
             sss.AppendFormat("{3}" +
                              "                {3}" +
                              "	Update [{0}].[{1}].[{2}]{3}" +
@@ -157,32 +183,13 @@ namespace FlexiSqlTools.Core
                              "		", 
                              dbName, selectTableSchema, spConfig.Name.TableName, Environment.NewLine);
 
-            int i = 0;
-            foreach (var row in allColumnsOfTable)
-            {
-                if (row.IsIdentity == 1) continue;
-
-                if (i > 0)
-                    sss.AppendFormat(", {0}" +
-                                     "		", Environment.NewLine);
-                sss.Append(row.COLUMN_NAME);
-                sss.Append(" = ");
-                sss.AppendFormat("{0}", (row.COLUMN_NAME.ToLower() == "lastmodificationtime") ? "GetDate()" : "@" + row.COLUMN_NAME);
-                i++;
-            }
+            sss.Append(allColumnsOfTable.GetUpdateColumnListString());
             sss.AppendFormat(" {0}" +
                              "	Where{0}" +
                              "		",
                              Environment.NewLine);
 
-            i = 0;
-            foreach (var PKRow in primaryKeys)
-            {
-                if (i > 0) 
-                    sss.AppendFormat(" and {0}", Environment.NewLine);
-                sss.AppendFormat(@"{0} = @{0}", PKRow.COLUMN_NAME);
-                i++;
-            }
+            sss.Append(primaryKeys.GetWhereStatement());
 
             sss.AppendFormat("{0}" +
                              "END{0}",
@@ -197,7 +204,7 @@ namespace FlexiSqlTools.Core
         public static string GenerateSelectRowSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
             var primaryKeys = allColumnsOfTable.Where(p => p.Constraint_Type == "PK");
-            var SelectTABLE_SCHEMA = GetTableSchema(allColumnsOfTable, spConfig);
+            var SelectTABLE_SCHEMA = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
             if (primaryKeys.Count() == 0)
                 return "";
 
@@ -275,7 +282,7 @@ namespace FlexiSqlTools.Core
         
         public static string GenerateSelectAllSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
-            var SelectTABLE_SCHEMA = GetTableSchema(allColumnsOfTable, spConfig);
+            var SelectTABLE_SCHEMA = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
 
             StringBuilder stringBuilder = new StringBuilder(GetCommentForSp());
             AppendUseDBExpression(dbName, spConfig, stringBuilder);
@@ -334,7 +341,7 @@ namespace FlexiSqlTools.Core
         {
             var conditionFields = allColumnsOfTable.Where(p => p.Constraint_Type == "PK");
             if (conditionFields.Count() == 0) { conditionFields = allColumnsOfTable.ToList(); }
-            var SelectTABLE_SCHEMA = GetTableSchema(allColumnsOfTable, spConfig);
+            var SelectTABLE_SCHEMA = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
 
             StringBuilder sss = new StringBuilder(GetCommentForSp());
             AppendUseDBExpression(dbName, spConfig, sss);
@@ -402,21 +409,21 @@ namespace FlexiSqlTools.Core
         
         public static string GenerateSearchWithPagingAndSortingTotalCountSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
-            var SelectTABLE_SCHEMA = GetTableSchema(allColumnsOfTable, spConfig);
+            var SelectTABLE_SCHEMA = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
 
             StringBuilder sss = new StringBuilder(GetCommentForSp());
             AppendUseDBExpression(dbName, spConfig, sss);
 
             var nonPrimaryKeys = allColumnsOfTable.Where(p => p.Constraint_Type != "PK");
-            var textColumns = GetTextColumns(allColumnsOfTable);
-            var nonTextColumns = GetNonTextualColumns(allColumnsOfTable);
+            var textColumns = allColumnsOfTable.GetTextColumns();
+            var nonTextColumns = allColumnsOfTable.GetNonTextualColumns();
 
             sss.Append("Create Procedure ");
             sss.Append(spConfig.Name.ToString());
             sss.AppendFormat(@"{0}" +
                              "({0}" +
                              "	", Environment.NewLine);
-            AppendParameterDeclarationFor(nonPrimaryKeys.Where(x => x.COLUMN_NAME.ToLower() != "lastmodificationtime" && x.COLUMN_NAME.ToLower() != "lastmodifiedby"), sss);
+            sss.Append(nonPrimaryKeys.Where(x => x.COLUMN_NAME.ToLower() != "lastmodificationtime" && x.COLUMN_NAME.ToLower() != "lastmodifiedby").GetUpdateParams());
 
             sss.AppendFormat(@", {0}" +
                              "    {0}" +
@@ -527,7 +534,7 @@ namespace FlexiSqlTools.Core
         public static string GenerateOldSearchWithPageSortTotalCountSp(string dbName, IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
         {
             var primaryKeys = allColumnsOfTable.Where(p => p.Constraint_Type == "PK");
-            var selectTableSchema = GetTableSchema(allColumnsOfTable, spConfig);
+            var selectTableSchema = allColumnsOfTable.GetTableSchema(spConfig.Name.TableName);
 
             StringBuilder sss = new StringBuilder(GetCommentForSp());
             AppendUseDBExpression(dbName, spConfig, sss);
@@ -605,84 +612,10 @@ namespace FlexiSqlTools.Core
         #endregion
         
         #region Private Methods
-
-        private static IEnumerable<vw_SPGenenerator> GetNonTextualColumns(IEnumerable<vw_SPGenenerator> allColumnsOfTable)
-        {
-            return allColumnsOfTable.Where(
-                p => (
-                         (p.DATA_TYPE.ToLower() != "varchar") &&
-                         (p.DATA_TYPE.ToLower() != "nvarchar") &&
-                         (p.DATA_TYPE.ToLower() != "text") &&
-                         (p.DATA_TYPE.ToLower() != "ntext")
-                     )
-                );
-        }
         
-        private static IEnumerable<vw_SPGenenerator> GetTextColumns(IEnumerable<vw_SPGenenerator> allColumnsOfTable)
-        {
-            return allColumnsOfTable.Where(
-                p => (
-                         (p.DATA_TYPE.ToLower() == "varchar") ||
-                         (p.DATA_TYPE.ToLower() == "nvarchar") ||
-                         (p.DATA_TYPE.ToLower() == "text") ||
-                         (p.DATA_TYPE.ToLower() == "ntext")
-                     )
-                );
-        }
-        
-        private static IEnumerable<vw_SPGenenerator> GetNationalTextColumns(IEnumerable<vw_SPGenenerator> allColumnsOfTable)
-        {
-            return allColumnsOfTable.Where(
-                p => (
-                         (p.DATA_TYPE.ToLower() == "nvarchar") ||
-                         (p.DATA_TYPE.ToLower() == "ntext")
-                     )
-                );
-        }
-        
-        private static string GetTableSchema(IEnumerable<vw_SPGenenerator> allColumnsOfTable, StoredProcedureConfig spConfig)
-        {
-            return allColumnsOfTable.First(p => p.TABLE_NAME == spConfig.Name.TableName).TABLE_SCHEMA;
-        }
-        
-        private static void AppendNormalizeQueryForTextColumns(IEnumerable<vw_SPGenenerator> allColumnsOfTable, StringBuilder sss)
-        {
-            var textColumns = GetNationalTextColumns(allColumnsOfTable);
-            int k = 0;
-            foreach (var textCol in textColumns)
-            {
-                if (k > 0)
-                    sss.AppendFormat("{0}", Environment.NewLine);
-                sss.AppendFormat(@"    Set @{0} = dbo.GetStandardString(@{0});", textCol.COLUMN_NAME);
-                k++;
-            }
-        }
-        
-        private static void AppendParameterDeclarationFor(IEnumerable<vw_SPGenenerator> allColumnsOfTable, StringBuilder sss)
-        {
-            int i = 0;
-            foreach (var row in allColumnsOfTable.Where(x => x.COLUMN_NAME.ToLower() != "lastmodificationtime"))
-            {
-                if (i > 0)
-                    sss.AppendFormat(", {0}" +
-                                     "	", Environment.NewLine);
-                sss.AppendFormat("@{0} {1}{2}", row.COLUMN_NAME, row.DATA_TYPE, GetTypeWithLength(row));
-                i++;
-            }
-        }
-
-        private static string GetTypeWithLength(vw_SPGenenerator row)
-        {
-            if (row.CHARACTER_MAXIMUM_LENGTH != null && (row.DATA_TYPE != "text") && (row.DATA_TYPE != "ntext") && (row.DATA_TYPE != "image"))
-            {
-                return string.Format("({0})", (row.CHARACTER_MAXIMUM_LENGTH == -1) ? "MAX" : row.CHARACTER_MAXIMUM_LENGTH.ToString());
-            }
-            return "";
-        }
-
         private static void AppendNormalizeQueryForTextColumnsForSearch(IEnumerable<vw_SPGenenerator> allColumnsOfTable, StringBuilder sss)
         {
-            var textColumns = GetTextColumns(allColumnsOfTable);
+            var textColumns = allColumnsOfTable.GetTextColumns();
             int k = 0;
             foreach (var textCol in textColumns)
             {
@@ -700,16 +633,6 @@ namespace FlexiSqlTools.Core
             }
         }
 
-        private static bool HasIdentity(IEnumerable<vw_SPGenenerator> allColumnsOfTable)
-        {
-            bool hasIdentity = false;
-            if (allColumnsOfTable.Where(x => (x.IsIdentity.HasValue && x.IsIdentity == 1)).Count() > 0)
-            {
-                hasIdentity = true;
-            }
-            return hasIdentity;
-        }
-        
         #endregion Private Methods
     }
 }

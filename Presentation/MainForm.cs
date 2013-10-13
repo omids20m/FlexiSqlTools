@@ -304,7 +304,7 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
                                                              Postfix = txtPostfix.Text.Trim(),
                                                              SchemaName = schemaName,
                                                              TableName = tableName /*,
-                                                         Name = ""*/
+                                                             Name = ""*/
                                                          };
 
                         if (tblNode.Checked)
@@ -333,6 +333,33 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
                                 ExecuteQueryIfNeeded(insertSpQuery);
 
                                 #endregion
+
+                                #region From Template
+
+                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig,
+@"
+Create Procedure |procName|
+	|inputParams|,
+	@InsertedId int output
+With Encryption
+As
+Begin
+    Set NoCount On;
+    |normalizeNationalTexts|
+
+    Insert Into [|dbName|].[|schemaName|].[|tableName|]
+        (|insertColumnList|)
+    Values
+        (|insertValueList|)
+    
+    Set @InsertedId = SCOPE_IDENTITY();
+End");
+                                result.AppendLine(generatedFromTemplate);
+                                //if(chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(generatedFromTemplate);
+
+                                #endregion From Template
                             }
                             if (chkSelectAll.Checked)
                             {
@@ -369,6 +396,32 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
                                 ExecuteQueryIfNeeded(updateSpQuery);
 
                                 #endregion
+
+                                #region From Template
+                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig,
+@"
+Create Procedure |procName|
+    |updateParams|
+	/*|identityParams|,
+	--|inputParams|*/
+AS
+BEGIN
+    Set NoCount On;
+|normalizeNationalTexts|
+                
+	Update [|dbName|].[|schemaName|].[|tableName|]
+	Set
+	    |updateColumnList|
+	Where
+	|whereStatement|
+END
+GO");
+                                result.AppendLine(generatedFromTemplate);
+                                //if(chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(generatedFromTemplate);
+
+                                #endregion From Template
                             }
                             if (chkOldSearch_PageSort.Checked)
                             {
@@ -750,6 +803,28 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
         private void cbDestinationDatabase_SelectedIndexChanged(object sender, EventArgs e)
         {
             FillComboTables(txtDestinationConnectionString.Text, cbDestinationDatabase, cbDestinationTable);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var result = new StringBuilder();
+
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                //result += GenerateQuery(node);
+                string generatedQuery = GenerateAndExecuteQuery(node);
+                if (!string.IsNullOrEmpty(generatedQuery))
+                {
+                    result.AppendLine(generatedQuery);
+                }
+                //result.AppendLine("GO");
+            }
+
+            if (chkcopyToClipboard.Checked) Clipboard.SetText(result.ToString());
+
+            txtGeneratedQuery.Text = result.ToString();
+            txtGeneratedQuery.SelectAll();
+            tabControl1.SelectedIndex = 2;
         }
     }
 }

@@ -100,7 +100,7 @@
             this.rbtnSearch = new System.Windows.Forms.RadioButton();
             this.chkLstOrder = new System.Windows.Forms.ListBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.btnBuildCustom = new System.Windows.Forms.Button();
+            this.btnGenerateCustom = new System.Windows.Forms.Button();
             this.chkLstRowNumber = new System.Windows.Forms.CheckedListBox();
             this.chkRowNumber = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -153,6 +153,7 @@
             this.txtSourcePassword = new System.Windows.Forms.TextBox();
             this.rbSourceWinAuth = new System.Windows.Forms.RadioButton();
             this.rbSourceSqlAuth = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -433,6 +434,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.chkAddUseDB);
             this.tabPage1.Controls.Add(this.txtSearch_PageSort);
@@ -956,7 +958,7 @@
             this.tabPage2.Controls.Add(this.rbtnSearch);
             this.tabPage2.Controls.Add(this.chkLstOrder);
             this.tabPage2.Controls.Add(this.label15);
-            this.tabPage2.Controls.Add(this.btnBuildCustom);
+            this.tabPage2.Controls.Add(this.btnGenerateCustom);
             this.tabPage2.Controls.Add(this.chkLstRowNumber);
             this.tabPage2.Controls.Add(this.chkRowNumber);
             this.tabPage2.Controls.Add(this.label14);
@@ -1010,16 +1012,16 @@
             this.label15.TabIndex = 16;
             this.label15.Text = "Order by field : ";
             // 
-            // btnBuildCustom
+            // btnGenerateCustom
             // 
-            this.btnBuildCustom.Enabled = false;
-            this.btnBuildCustom.Location = new System.Drawing.Point(9, 230);
-            this.btnBuildCustom.Name = "btnBuildCustom";
-            this.btnBuildCustom.Size = new System.Drawing.Size(110, 23);
-            this.btnBuildCustom.TabIndex = 14;
-            this.btnBuildCustom.Text = "Build";
-            this.btnBuildCustom.UseVisualStyleBackColor = true;
-            this.btnBuildCustom.Click += new System.EventHandler(this.btnBuildCustom_Click);
+            this.btnGenerateCustom.Enabled = false;
+            this.btnGenerateCustom.Location = new System.Drawing.Point(9, 230);
+            this.btnGenerateCustom.Name = "btnGenerateCustom";
+            this.btnGenerateCustom.Size = new System.Drawing.Size(110, 23);
+            this.btnGenerateCustom.TabIndex = 14;
+            this.btnGenerateCustom.Text = "Generate";
+            this.btnGenerateCustom.UseVisualStyleBackColor = true;
+            this.btnGenerateCustom.Click += new System.EventHandler(this.btnBuildCustom_Click);
             // 
             // chkLstRowNumber
             // 
@@ -1555,6 +1557,16 @@
             this.rbSourceSqlAuth.Text = "Use SQL Server authentication";
             this.rbSourceSqlAuth.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(640, 328);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 63;
+            this.button1.Text = "test template";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1641,7 +1653,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chkRowNumber;
         private System.Windows.Forms.CheckedListBox chkLstRowNumber;
-        private System.Windows.Forms.Button btnBuildCustom;
+        private System.Windows.Forms.Button btnGenerateCustom;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ListBox chkLstOrder;
         private System.Windows.Forms.CheckBox chkSelectAll;
@@ -1723,6 +1735,7 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.TextBox txtDestinationConnectionString;
         private System.Windows.Forms.TextBox txtSourceConnectionString;
+        private System.Windows.Forms.Button button1;
     }
 }
 

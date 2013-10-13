@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TemplateKeywords.cs" />
+    <Compile Include="TemplateExtensions.cs" />
     <Compile Include="DataBaseHelper.cs" />
     <Compile Include="DataClasses.designer.cs">
       <DependentUpon>DataClasses.dbml</DependentUpon>
