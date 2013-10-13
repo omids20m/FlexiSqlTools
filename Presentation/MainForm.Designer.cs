@@ -932,8 +932,6 @@
             // 
             this.chkSearch_PageSort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSearch_PageSort.AutoSize = true;
-            this.chkSearch_PageSort.Checked = true;
-            this.chkSearch_PageSort.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkSearch_PageSort.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSearch_PageSort.Location = new System.Drawing.Point(386, 199);
             this.chkSearch_PageSort.Name = "chkSearch_PageSort";
@@ -983,8 +981,6 @@
             // 
             this.chkUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUpdate.AutoSize = true;
-            this.chkUpdate.Checked = true;
-            this.chkUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkUpdate.Location = new System.Drawing.Point(386, 173);
             this.chkUpdate.Name = "chkUpdate";
             this.chkUpdate.Size = new System.Drawing.Size(85, 17);
@@ -996,8 +992,6 @@
             // 
             this.chkSelectRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSelectRow.AutoSize = true;
-            this.chkSelectRow.Checked = true;
-            this.chkSelectRow.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkSelectRow.Location = new System.Drawing.Point(386, 147);
             this.chkSelectRow.Name = "chkSelectRow";
             this.chkSelectRow.Size = new System.Drawing.Size(85, 17);
@@ -1009,8 +1003,6 @@
             // 
             this.chkSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSelectAll.AutoSize = true;
-            this.chkSelectAll.Checked = true;
-            this.chkSelectAll.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkSelectAll.Location = new System.Drawing.Point(386, 121);
             this.chkSelectAll.Name = "chkSelectAll";
             this.chkSelectAll.Size = new System.Drawing.Size(81, 17);
@@ -1022,8 +1014,6 @@
             // 
             this.chkInsert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkInsert.AutoSize = true;
-            this.chkInsert.Checked = true;
-            this.chkInsert.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkInsert.Location = new System.Drawing.Point(386, 95);
             this.chkInsert.Name = "chkInsert";
             this.chkInsert.Size = new System.Drawing.Size(85, 17);

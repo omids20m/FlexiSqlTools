@@ -223,51 +223,71 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
 
         public MainForm()
         {
-            insertTemplate = @"
-if OBJECT_ID ('[|schemaName|].[|tableName|]') is not null
-Begin
-    Drop Proc [|schemaName|].[|tableName|]
-End
-GO
-Create Procedure [|schemaName|].[|tableName|]
-	|inputParams|,
-	@InsertedId int output
-With Encryption
-As
-Begin
-    Set NoCount On;
-    |normalizeNationalTexts|
-
-    Insert Into [|dbName|].[|schemaName|].[|tableName|]
-        (|insertColumnList|)
-    Values
-        (|insertValueList|)
-    
-    Set @InsertedId = SCOPE_IDENTITY();
-End
-GO";
-        updateTemplate = @"
-if OBJECT_ID ('[|schemaName|].[|tableName|]') is not null
-Begin
-    Drop Proc [|schemaName|].[|tableName|]
-End
-GO
-Create Procedure |procName|
-    |updateParams|
-	/*|identityParams|,
-	--|inputParams|*/
-AS
-BEGIN
-    Set NoCount On;
-|normalizeNationalTexts|
-                
-	Update [|dbName|].[|schemaName|].[|tableName|]
-	Set
-	    |updateColumnList|
-	Where
-	    |whereStatement|
-END
-GO";
+            deleteRowTemplate = DataBaseHelper.GetCommentForSp() +
+                                "if OBJECT_ID ('|tableName|_Create') is not null\r\n" +
+                                "Begin\n" +
+                                "    Drop Proc [|dbName|].[|schemaName|].[|tableName|_Create]\n" +
+                                "End\n" +
+                                "GO\n" +
+                                "Create Procedure [|dbName|].[|schemaName|].[|tableName|_Create]\n" +
+                                "	--@Id int, @Id int, @Id int, @Id int \n" +
+                                "AS\n" +
+                                "BEGIN\n" +
+                                "    Set NoCount On;\n" +
+                                "    Begin Try\n" +
+                                "	    DELETE FROM [|dbName|].[|schemaName|].[|tableName|]\n" +
+                                "	    WHERE |whereStatement|\n" +
+                                "	End Try\n" +
+                                "	Begin Catch\n" +
+                                "		Return ERROR_NUMBER()\n" +
+                                "	End Catch\n" +
+                                "END\n" +
+                                "GO\n";
+            insertTemplate = DataBaseHelper.GetCommentForSp() +
+                             "if OBJECT_ID ('|tableName|_Create') is not null\r\n" +
+                             "Begin\n" +
+                             "    Drop Proc [|dbName|].[|schemaName|].[|tableName|_Create]\n" +
+                             "End\n" +
+                             "GO\n" +
+                             "Create Procedure [|dbName|].[|schemaName|].[|tableName|_Create]\n" +
+                             "	|inputParams|,\n" +
+                             "	@InsertedId int output\n" +
+                             "With Encryption\n" +
+                             "As\n" +
+                             "Begin\n" +
+                             "    Set NoCount On;\n" +
+                             "    |normalizeNationalTexts|\n" +
+                             "\n" +
+                             "    Insert Into [|dbName|].[|schemaName|].[|tableName|]\n" +
+                             "        (|insertColumnList|)\n" +
+                             "    Values\n" +
+                             "        (|insertValueList|)\n" +
+                             "    \n" +
+                             "    Set @InsertedId = SCOPE_IDENTITY();\n" +
+                             "End\n" +
+                             "GO\n";
+            updateTemplate = DataBaseHelper.GetCommentForSp() +
+                             "if OBJECT_ID ('|tableName|_Update') is not null\n" +
+                             "Begin\n" +
+                             "Drop Proc |tableName|_Update\n" +
+                             "End\n" +
+                             "GO\n" +
+                             "Create Procedure [|dbName|].[|schemaName|].|tableName|_Update\n" +
+                             "|updateParams|\n" +
+                             "/*|identityParams|,\n" +
+                             "--|inputParams|*/\n" +
+                             "AS\n" +
+                             "BEGIN\n" +
+                             "Set NoCount On;\n" +
+                             "|normalizeNationalTexts|\n" +
+                             "\n" +
+                             "Update [|dbName|].[|schemaName|].[|tableName|]\n" +
+                             "Set\n" +
+                             "|updateColumnList|\n" +
+                             "Where\n" +
+                             "|whereStatement|\n" +
+                             "END\n" +
+                             "GO\n";
             InitializeComponent();
         }
 
@@ -385,6 +405,16 @@ GO";
                                 ExecuteQueryIfNeeded(deleteRowSpQuery);
 
                                 #endregion
+
+                                #region From Template
+
+                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig, this.deleteRowTemplate);
+                                result.AppendLine(generatedFromTemplate);
+                                //if(chkUseGo.Checked) result.AppendLine("GO");
+                                ExecuteQueryIfNeeded(generatedFromTemplate);
+
+                                #endregion From Template
                             }
                             if (chkInsert.Checked)
                             {
@@ -400,7 +430,7 @@ GO";
 
                                 #region From Template
 
-                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                storedProcedureConfig.Name.Name = txtInsert.Text.Trim();
                                 string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig, this.insertTemplate);
                                 result.AppendLine(generatedFromTemplate);
                                 //if(chkUseGo.Checked) result.AppendLine("GO");
@@ -446,7 +476,7 @@ GO";
 
                                 #region From Template
 
-                                storedProcedureConfig.Name.Name = txtDeleteRow.Text.Trim();
+                                storedProcedureConfig.Name.Name = txtUpdate.Text.Trim();
                                 string generatedFromTemplate = DataBaseHelper.GenerateQueryFromTemplate(databaseNode.Text, allColumnsForTable, storedProcedureConfig, this.updateTemplate);
                                 result.AppendLine(generatedFromTemplate);
                                 //if(chkUseGo.Checked) result.AppendLine("GO");
