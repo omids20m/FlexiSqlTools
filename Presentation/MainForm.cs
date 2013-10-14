@@ -895,8 +895,12 @@ namespace FlexiSqlTools.Presentation.WindowsFormsApplication
         private void btnDeleteRowTemplate_Click(object sender, EventArgs e)
         {
             var templateDialog = new TemplateDialog();
-            var dres = templateDialog.ShowDialog();
-            this.deleteRowTemplate = templateDialog.textBox1.Text;
+            templateDialog.textBox1.Text = deleteRowTemplate;
+            var dialogResult = templateDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK)
+            {
+                this.deleteRowTemplate = templateDialog.textBox1.Text;
+            }
         }
 
         private void btnInsertTemplate_Click(object sender, EventArgs e)

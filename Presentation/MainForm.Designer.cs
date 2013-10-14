@@ -552,7 +552,6 @@
             // btnDeleteRowTemplate
             // 
             this.btnDeleteRowTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteRowTemplate.Enabled = false;
             this.btnDeleteRowTemplate.Location = new System.Drawing.Point(355, 65);
             this.btnDeleteRowTemplate.Name = "btnDeleteRowTemplate";
             this.btnDeleteRowTemplate.Size = new System.Drawing.Size(25, 23);
