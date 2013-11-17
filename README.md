@@ -18,3 +18,7 @@ Usage
 -----
 Just run the program, connect to MsSql database, point it at a table, click the generate button 
 and the code is generated for you.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/omids20m/flexisqltools/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
